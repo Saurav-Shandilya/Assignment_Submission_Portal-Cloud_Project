@@ -1,35 +1,93 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
-function App() {
-  const [count, setCount] = useState(0)
+// Components
+import Navbar from "./components/Navbar";
+import ProtectedRoute from "./components/ProtectedRoute";
 
+// Pages (Common)
+import Landing from "./Pages/Landing";
+import Login from "./Pages/Login";
+import Signup from "./Pages/Signup";
+
+// Student Pages
+import StudentDashboard from "./Pages/student/StudentDashboard";
+import ViewAssignments from "./Pages/student/ViewAssignments";
+import SubmitAssignment from "./Pages/student/SubmitAssignment";
+
+// Teacher Pages
+import TeacherDashboard from "./Pages/teacher/TeacherDashboard";
+import CreateAssignment from "./Pages/teacher/CreateAssignment";
+import Submissions from "./Pages/teacher/Submissions";
+
+const App = () => {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <Router>
+      <Navbar />
 
-export default App
+      <Routes>
+        {/* Public */}
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+
+        {/* Student */}
+        <Route
+          path="/student/dashboard"
+          element={
+            <ProtectedRoute role="student">
+              <StudentDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/assignments"
+          element={
+            <ProtectedRoute role="student">
+              <ViewAssignments />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/submit/:id"
+          element={
+            <ProtectedRoute role="student">
+              <SubmitAssignment />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Teacher */}
+        <Route
+          path="/teacher/dashboard"
+          element={
+            <ProtectedRoute role="teacher">
+              <TeacherDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/teacher/create-assignment"
+          element={
+            <ProtectedRoute role="teacher">
+              <CreateAssignment />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/teacher/submissions"
+          element={
+            <ProtectedRoute role="teacher">
+              <Submissions />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Router>
+  );
+};
+
+export default App;
