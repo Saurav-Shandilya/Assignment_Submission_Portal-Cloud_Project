@@ -1,4 +1,5 @@
-import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
+import { FaUser, FaEnvelope, FaLock, FaIdCard } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 export default function SignUp() {
   return (
@@ -8,22 +9,39 @@ export default function SignUp() {
         
         {/* Heading */}
         <h1 className="text-3xl font-bold text-center text-[#0E21A0] mb-1">
-          Create Account 🚀
+          Student Sign Up 🎓
         </h1>
-        <p className="text-center text-gray-600 mb-6">
-          Welcome! Please register
+        <p className="text-center text-gray-600 mb-2">
+          Only GLA University students can register
         </p>
+
+        {/* Important Notice */}
+        <div className="bg-blue-100 text-blue-800 text-sm p-3 rounded-lg mb-6 border border-blue-300">
+          ⚠️ Enter your valid <b>University Roll Number</b>.
+        </div>
 
         {/* Form */}
         <form className="space-y-4">
-          
-          {/* Name */}
+
+          {/* Full Name */}
           <div className="relative">
             <FaUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
             <input
               type="text"
               placeholder="Full Name"
               className="w-full pl-10 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0E21A0]"
+              required
+            />
+          </div>
+
+          {/* University Roll Number */}
+          <div className="relative">
+            <FaIdCard className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+            <input
+              type="text"
+              placeholder="University Roll Number"
+              className="w-full pl-10 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0E21A0]"
+              required
             />
           </div>
 
@@ -32,8 +50,9 @@ export default function SignUp() {
             <FaEnvelope className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
             <input
               type="email"
-              placeholder="Email Address"
+              placeholder="Student Email (University Email Preferred)"
               className="w-full pl-10 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0E21A0]"
+              required
             />
           </div>
 
@@ -44,6 +63,7 @@ export default function SignUp() {
               type="password"
               placeholder="Password"
               className="w-full pl-10 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0E21A0]"
+              required
             />
           </div>
 
@@ -59,9 +79,12 @@ export default function SignUp() {
         {/* Footer */}
         <p className="text-center text-sm text-gray-600 mt-6">
           Already have an account?{" "}
-          <span className="text-[#0E21A0] font-semibold cursor-pointer hover:underline">
+          <Link
+            to="/login"
+            className="text-[#0E21A0] font-semibold cursor-pointer hover:underline"
+          >
             Login
-          </span>
+          </Link>
         </p>
       </div>
     </div>
