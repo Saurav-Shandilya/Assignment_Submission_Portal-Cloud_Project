@@ -1,92 +1,171 @@
-import { FaUser, FaEnvelope, FaLock, FaIdCard } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import API from "../api";
+import { useAuth } from "../context/AuthContext";
 
-export default function SignUp() {
+const Signup = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const [role, setRole] = useState("student");
+
+  const [name, setName] = useState("");
+  const [rollNo, setRollNo] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      setLoading(true);
+
+      let res;
+
+      if (role === "student") {
+        res = await API.post("/student/register", {
+          name,
+          rollNo,
+          email,
+          password,
+        });
+      } else {
+        res = await API.post("/teacher/register", {
+          name,
+          email,
+          password,
+        });
+      }
+
+      // ✅ store auth in context
+      login(res.data);
+
+      // ✅ redirect
+      if (role === "student") navigate("/student/dashboard");
+      else navigate("/teacher/dashboard");
+    } catch (err) {
+      setError(err.response?.data?.message || "Signup failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0d0d0d]">
-      
-      <div className="w-full max-w-md bg-[#f2f2f2] rounded-2xl shadow-2xl p-8">
-        
-        {/* Heading */}
-        <h1 className="text-3xl font-bold text-center text-[#0E21A0] mb-1">
-          Student Sign Up 🎓
-        </h1>
-        <p className="text-center text-gray-600 mb-2">
-          Only GLA University students can register
-        </p>
+    <div className="min-h-screen bg-[#0d0d0d] text-white flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-[#141414] border border-white/10 rounded-2xl shadow-lg p-6">
+        <h2 className="text-2xl font-bold text-center">
+          Signup <span className="text-[#0E21A0]">Portal</span>
+        </h2>
 
-        {/* Important Notice */}
-        <div className="bg-blue-100 text-blue-800 text-sm p-3 rounded-lg mb-6 border border-blue-300">
-          ⚠️ Enter your valid <b>University Roll Number</b>.
+        {/* Toggle */}
+        <div className="flex bg-[#0d0d0d] rounded-xl p-1 border border-white/10 mt-5">
+          <button
+            type="button"
+            onClick={() => setRole("student")}
+            className={`w-1/2 py-2 rounded-lg text-sm font-semibold transition ${
+              role === "student"
+                ? "bg-[#0E21A0] text-white"
+                : "text-white/70 hover:text-white"
+            }`}
+          >
+            Student
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setRole("teacher")}
+            className={`w-1/2 py-2 rounded-lg text-sm font-semibold transition ${
+              role === "teacher"
+                ? "bg-[#0E21A0] text-white"
+                : "text-white/70 hover:text-white"
+            }`}
+          >
+            Teacher
+          </button>
         </div>
 
+        {/* Error */}
+        {error && (
+          <div className="mt-4 p-2 rounded-lg bg-red-500/20 text-red-300 text-sm">
+            {error}
+          </div>
+        )}
+
         {/* Form */}
-        <form className="space-y-4">
-
-          {/* Full Name */}
-          <div className="relative">
-            <FaUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+        <form onSubmit={handleSignup} className="space-y-4 mt-5">
+          <div>
+            <label className="text-sm text-white/70">Name</label>
             <input
               type="text"
-              placeholder="Full Name"
-              className="w-full pl-10 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0E21A0]"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter name"
+              className="w-full mt-1 px-4 py-2 rounded-xl bg-[#0d0d0d] border border-white/10 outline-none focus:border-[#0E21A0]"
               required
             />
           </div>
 
-          {/* University Roll Number */}
-          <div className="relative">
-            <FaIdCard className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-            <input
-              type="text"
-              placeholder="University Roll Number"
-              className="w-full pl-10 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0E21A0]"
-              required
-            />
-          </div>
+          {/* Student Roll No */}
+          {role === "student" && (
+            <div>
+              <label className="text-sm text-white/70">Roll No</label>
+              <input
+                type="text"
+                value={rollNo}
+                onChange={(e) => setRollNo(e.target.value)}
+                placeholder="Enter roll number"
+                className="w-full mt-1 px-4 py-2 rounded-xl bg-[#0d0d0d] border border-white/10 outline-none focus:border-[#0E21A0]"
+                required
+              />
+            </div>
+          )}
 
-          {/* Email */}
-          <div className="relative">
-            <FaEnvelope className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+          <div>
+            <label className="text-sm text-white/70">Email</label>
             <input
               type="email"
-              placeholder="Student Email (University Email Preferred)"
-              className="w-full pl-10 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0E21A0]"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter email"
+              className="w-full mt-1 px-4 py-2 rounded-xl bg-[#0d0d0d] border border-white/10 outline-none focus:border-[#0E21A0]"
               required
             />
           </div>
 
-          {/* Password */}
-          <div className="relative">
-            <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+          <div>
+            <label className="text-sm text-white/70">Password</label>
             <input
               type="password"
-              placeholder="Password"
-              className="w-full pl-10 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0E21A0]"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="********"
+              className="w-full mt-1 px-4 py-2 rounded-xl bg-[#0d0d0d] border border-white/10 outline-none focus:border-[#0E21A0]"
               required
             />
           </div>
 
-          {/* Button */}
           <button
             type="submit"
-            className="w-full bg-[#0E21A0] text-white py-3 rounded-lg font-semibold hover:opacity-90 transition"
+            disabled={loading}
+            className="w-full py-2 rounded-xl bg-[#0E21A0] hover:opacity-90 transition font-semibold disabled:opacity-50"
           >
-            Sign Up
+            {loading ? "Creating..." : `Signup as ${role}`}
           </button>
         </form>
 
-        {/* Footer */}
-        <p className="text-center text-sm text-gray-600 mt-6">
+        <div className="mt-6 text-center text-sm text-white/60">
           Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-[#0E21A0] font-semibold cursor-pointer hover:underline"
-          >
+          <Link to="/login" className="text-[#0E21A0] hover:underline">
             Login
           </Link>
-        </p>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default Signup;

@@ -1,147 +1,147 @@
-import { useState } from "react";
-import { FiUser, FiLock } from "react-icons/fi";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { FaUserGraduate, FaChalkboardTeacher } from "react-icons/fa";
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import API from "../api";
+import { useAuth } from "../context/AuthContext";
 
-export default function Login() {
-  const [showPassword, setShowPassword] = useState(false);
+const Login = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
   const [role, setRole] = useState("student");
+  const [rollNo, setRollNo] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const [data, setData] = useState({
-    identifier: "",
-    password: "",
-  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleChange = (e) => {
-    setData({ ...data, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log("Login Data:", { role, ...data });
+    setError("");
+
+    try {
+      setLoading(true);
+
+      let res;
+
+      if (role === "student") {
+        res = await API.post("/student/login", { rollNo, password });
+      } else {
+        res = await API.post("/teacher/login", { email, password });
+      }
+
+      // ✅ store auth in context
+      login(res.data);
+
+      // ✅ redirect
+      if (role === "student") navigate("/student/dashboard");
+      else navigate("/teacher/dashboard");
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#0d0d0d] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#0d0d0d] text-white flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-[#141414] border border-white/10 rounded-2xl shadow-lg p-6">
+        <h2 className="text-2xl font-bold text-center">
+          Login <span className="text-[#0E21A0]">Portal</span>
+        </h2>
 
-      {/* CARD */}
-      <div className="w-full max-w-md bg-[#121212] text-white border border-white/10 rounded-2xl p-8 shadow-2xl">
-
-        {/* TITLE */}
-        <div className="text-center">
-          <h1 className="text-2xl font-bold">
-            Assignment Submission Portal
-          </h1>
-          <p className="text-sm text-white/50 mt-1 capitalize">
-            {role} Login
-          </p>
-        </div>
-
-        {/* ROLE TOGGLE */}
-        <div className="mt-6 flex bg-[#0d0d0d] border border-white/10 rounded-lg overflow-hidden">
+        {/* Toggle */}
+        <div className="flex bg-[#0d0d0d] rounded-xl p-1 border border-white/10 mt-5">
           <button
+            type="button"
             onClick={() => setRole("student")}
-            className={`w-1/2 py-2 flex items-center justify-center gap-2 text-sm transition
-              ${role === "student" ? "bg-[#0E21A0]" : "text-white/50 hover:bg-white/5"}
-            `}
+            className={`w-1/2 py-2 rounded-lg text-sm font-semibold transition ${
+              role === "student"
+                ? "bg-[#0E21A0] text-white"
+                : "text-white/70 hover:text-white"
+            }`}
           >
-            <FaUserGraduate />
             Student
           </button>
 
           <button
+            type="button"
             onClick={() => setRole("teacher")}
-            className={`w-1/2 py-2 flex items-center justify-center gap-2 text-sm transition
-              ${role === "teacher" ? "bg-[#0E21A0]" : "text-white/50 hover:bg-white/5"}
-            `}
+            className={`w-1/2 py-2 rounded-lg text-sm font-semibold transition ${
+              role === "teacher"
+                ? "bg-[#0E21A0] text-white"
+                : "text-white/70 hover:text-white"
+            }`}
           >
-            <FaChalkboardTeacher />
             Teacher
           </button>
         </div>
 
-        {/* FORM */}
-        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+        {/* Error */}
+        {error && (
+          <div className="mt-4 p-2 rounded-lg bg-red-500/20 text-red-300 text-sm">
+            {error}
+          </div>
+        )}
 
-          {/* ID / EMAIL */}
-          <div>
-            <label className="text-sm text-white/60">
-              {role === "student" ? "Student ID / Roll Number" : "Teacher Email"}
-            </label>
-
-            <div className="mt-2 flex items-center gap-3 bg-[#0d0d0d] border border-white/10 rounded-lg px-4 py-3 focus-within:border-[#0E21A0] transition">
-              <FiUser className="text-white/40" />
+        {/* Form */}
+        <form onSubmit={handleLogin} className="space-y-4 mt-5">
+          {role === "student" ? (
+            <div>
+              <label className="text-sm text-white/70">Roll No</label>
               <input
-                type={role === "student" ? "text" : "email"}
-                name="identifier"
-                value={data.identifier}
-                onChange={handleChange}
+                type="text"
+                value={rollNo}
+                onChange={(e) => setRollNo(e.target.value)}
+                placeholder="Enter roll number"
+                className="w-full mt-1 px-4 py-2 rounded-xl bg-[#0d0d0d] border border-white/10 outline-none focus:border-[#0E21A0]"
                 required
-                placeholder={
-                  role === "student"
-                    ? "CS2021-045"
-                    : "teacher@college.edu"
-                }
-                className="w-full bg-transparent outline-none text-sm text-white placeholder:text-white/30"
               />
             </div>
-          </div>
-
-          {/* PASSWORD */}
-          <div>
-            <label className="text-sm text-white/60">Password</label>
-
-            <div className="mt-2 flex items-center gap-3 bg-[#0d0d0d] border border-white/10 rounded-lg px-4 py-3 focus-within:border-[#0E21A0] transition">
-              <FiLock className="text-white/40" />
+          ) : (
+            <div>
+              <label className="text-sm text-white/70">Email</label>
               <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={data.password}
-                onChange={handleChange}
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter teacher email"
+                className="w-full mt-1 px-4 py-2 rounded-xl bg-[#0d0d0d] border border-white/10 outline-none focus:border-[#0E21A0]"
                 required
-                placeholder="Enter password"
-                className="w-full bg-transparent outline-none text-sm text-white placeholder:text-white/30"
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="text-white/40 hover:text-[#0E21A0]"
-              >
-                {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
-              </button>
             </div>
+          )}
+
+          <div>
+            <label className="text-sm text-white/70">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="********"
+              className="w-full mt-1 px-4 py-2 rounded-xl bg-[#0d0d0d] border border-white/10 outline-none focus:border-[#0E21A0]"
+              required
+            />
           </div>
 
-          {/* OPTIONS */}
-          <div className="flex justify-between text-xs text-white/50">
-            <span className="capitalize">Role: {role}</span>
-            <a href="/forgot-password" className="text-[#0E21A0] hover:underline">
-              Forgot Password?
-            </a>
-          </div>
-
-          {/* BUTTON */}
           <button
             type="submit"
-            className="w-full bg-[#0E21A0] py-3 rounded-lg font-semibold hover:opacity-90 transition"
+            disabled={loading}
+            className="w-full py-2 rounded-xl bg-[#0E21A0] hover:opacity-90 transition font-semibold disabled:opacity-50"
           >
-            Login as {role === "student" ? "Student" : "Teacher"}
+            {loading ? "Logging in..." : `Login as ${role}`}
           </button>
         </form>
 
-        {/* FOOTER */}
-        <div className="mt-6 text-center text-xs text-white/40">
-          <p>
-            {role === "student"
-              ? "Submit assignments before deadline"
-              : "Manage & review student assignments"}
-          </p>
-          <p className="mt-1">
-            © {new Date().getFullYear()} Student Portal
-          </p>
+        <div className="mt-6 text-center text-sm text-white/60">
+          Don’t have an account?{" "}
+          <Link to="/signup" className="text-[#0E21A0] hover:underline">
+            Signup
+          </Link>
         </div>
-
       </div>
     </div>
   );
-}
+};
+
+export default Login;
