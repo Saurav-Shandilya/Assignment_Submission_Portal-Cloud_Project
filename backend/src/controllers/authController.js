@@ -1,69 +1,144 @@
-const User = require("../models/User");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+import bcrypt from "bcryptjs";
+import Student from "../models/Student.js";
+import Teacher from "../models/Teacher.js";
+import generateToken from "../utils/generateToken.js";
 
-// REGISTER
-exports.registerUser = async (req, res) => {
+// ================= STUDENT =================
+
+// Register Student
+export const studentRegister = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, rollNo, email, password } = req.body;
 
-    // check user exists
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return res.status(400).json({ message: "User already exists" });
+    if (!name || !rollNo || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
     }
 
-    // hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const existRoll = await Student.findOne({ rollNo });
+    if (existRoll) return res.status(400).json({ message: "RollNo already exists" });
 
-    // create user
-    const user = await User.create({
+    const existEmail = await Student.findOne({ email });
+    if (existEmail) return res.status(400).json({ message: "Email already exists" });
+
+    const hashed = await bcrypt.hash(password, 10);
+
+    const student = await Student.create({
       name,
+      rollNo,
       email,
-      password: hashedPassword
+      password: hashed,
     });
 
     res.status(201).json({
-      message: "User registered successfully"
+      message: "Student registered successfully",
+      token: generateToken(student._id, "student"),
+      user: {
+        id: student._id,
+        name: student.name,
+        rollNo: student.rollNo,
+        email: student.email,
+        role: "student",
+      },
     });
-
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-// LOGIN
-exports.loginUser = async (req, res) => {
+// Login Student
+export const studentLogin = async (req, res) => {
+  try {
+    const { rollNo, password } = req.body;
+
+    if (!rollNo || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const student = await Student.findOne({ rollNo });
+    if (!student) return res.status(400).json({ message: "Invalid credentials" });
+
+    const isMatch = await bcrypt.compare(password, student.password);
+    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+
+    res.status(200).json({
+      message: "Student login successful",
+      token: generateToken(student._id, "student"),
+      user: {
+        id: student._id,
+        name: student.name,
+        rollNo: student.rollNo,
+        email: student.email,
+        role: "student",
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// ================= TEACHER =================
+
+// Register Teacher
+export const teacherRegister = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const existEmail = await Teacher.findOne({ email });
+    if (existEmail) return res.status(400).json({ message: "Email already exists" });
+
+    const hashed = await bcrypt.hash(password, 10);
+
+    const teacher = await Teacher.create({
+      name,
+      email,
+      password: hashed,
+    });
+
+    res.status(201).json({
+      message: "Teacher registered successfully",
+      token: generateToken(teacher._id, "teacher"),
+      user: {
+        id: teacher._id,
+        name: teacher.name,
+        email: teacher.email,
+        role: "teacher",
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Login Teacher
+export const teacherLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
+    if (!email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
+    const teacher = await Teacher.findOne({ email });
+    if (!teacher) return res.status(400).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" }
-    );
+    const isMatch = await bcrypt.compare(password, teacher.password);
+    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
     res.status(200).json({
-      token,
+      message: "Teacher login successful",
+      token: generateToken(teacher._id, "teacher"),
       user: {
-        id: user._id,
-        name: user.name,
-        email: user.email
-      }
+        id: teacher._id,
+        name: teacher.name,
+        email: teacher.email,
+        role: "teacher",
+      },
     });
-
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
   }
 };
