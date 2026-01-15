@@ -3,8 +3,18 @@ import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
 
-// routes
+
 import authRoutes from "./routes/authRoutes.js";
+import studentRoutes from "./routes/studentRoutes.js";
+import teacherRoutes from "./routes/teacherRoutes.js";
+// import studentRoutes from "./routes/studentRoutes.js";
+import submissionRoutes from "./routes/submissionRoutes.js";
+
+
+
+
+
+
 
 
 
@@ -28,6 +38,12 @@ app.get("/", (req, res) => {
 
 // ✅ Routes
 app.use("/api", authRoutes);
+app.use("/api/student", studentRoutes);
+app.use("/api/teacher", teacherRoutes);
+// app.use("/api/student", studentRoutes);
+app.use("/api/submission", submissionRoutes);
+
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

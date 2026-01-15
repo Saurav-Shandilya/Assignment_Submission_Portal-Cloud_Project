@@ -1,143 +1,143 @@
-import { FaBook, FaUpload, FaEye, FaUserGraduate } from "react-icons/fa";
-import { MdDashboard } from "react-icons/md";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { getStudentDashboard, getStudentAssignments } from "../../api/studentApi";
 
-export default function StudentDashboard() {
-  return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#050816] via-[#0a0f2c] to-[#020617] text-white">
+const StudentDashboard = () => {
+  const navigate = useNavigate();
 
-      {/* 🔮 Animated Background Blobs */}
-      <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] animate-floatSlow top-10 left-10"></div>
-        <div className="absolute w-[400px] h-[400px] bg-indigo-500/20 rounded-full blur-[120px] animate-floatSlow delay-200 top-1/3 right-20"></div>
-        <div className="absolute w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[140px] animate-floatSlow delay-500 bottom-10 left-1/3"></div>
-      </div>
+  const [stats, setStats] = useState(null);
+  const [assignments, setAssignments] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-      {/* 🧾 Background Watermark Text */}
-      <div className="fixed inset-0 -z-20 flex items-center justify-center pointer-events-none">
-        <h1 className="text-[160px] font-extrabold text-white/5 tracking-widest select-none">
-          ASSIGNMENTS
-        </h1>
-      </div>
+  const fetchDashboard = async () => {
+    try {
+      setLoading(true);
 
-      <div className="flex min-h-screen">
+      const statsRes = await getStudentDashboard();
+      const assRes = await getStudentAssignments();
 
-        {/* Sidebar */}
-        <aside className="hidden md:flex w-72 bg-black/40 backdrop-blur-xl border-r border-white/10 flex-col px-6 py-8">
-          <h2 className="text-2xl font-bold text-blue-500 mb-12 flex items-center gap-3">
-            <FaUserGraduate className="text-3xl" />
-            Student Panel
-          </h2>
+      setStats(statsRes.data);
 
-          <nav className="flex flex-col gap-3 text-sm">
-            <SidebarItem icon={<MdDashboard />} label="Dashboard" active />
-            <SidebarItem icon={<FaBook />} label="Assignments" />
-            <SidebarItem icon={<FaUpload />} label="Submit Work" />
-            <SidebarItem icon={<FaEye />} label="View Status" />
-          </nav>
-        </aside>
-
-        {/* Main Content */}
-        <main className="flex-1 px-6 md:px-12 py-10">
-
-          {/* Header */}
-          <div className="flex items-center justify-between mb-12">
-            <h1 className="text-4xl font-extrabold">
-              Welcome, <span className="text-blue-500">Student</span> 👋
-            </h1>
-
-            <button className="bg-blue-600 hover:bg-blue-700 transition px-6 py-2 rounded-xl text-sm font-semibold">
-              Logout
-            </button>
-          </div>
-
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            <StatCard
-              icon={<FaBook />}
-              title="Total Assignments"
-              value="12"
-              color="blue"
-            />
-            <StatCard
-              icon={<FaUpload />}
-              title="Submitted"
-              value="8"
-              color="green"
-            />
-            <StatCard
-              icon={<FaEye />}
-              title="Pending"
-              value="4"
-              color="yellow"
-            />
-          </div>
-
-          {/* Recent Assignments */}
-          <div className="mt-14 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8">
-            <h2 className="text-2xl font-bold mb-6">Recent Assignments</h2>
-
-            <div className="space-y-4 text-sm">
-              <ActivityRow
-                title="Cloud Computing Assignment"
-                status="Submitted"
-                color="text-green-400"
-              />
-              <ActivityRow
-                title="React Mini Project"
-                status="Pending"
-                color="text-yellow-400"
-              />
-            </div>
-          </div>
-
-        </main>
-      </div>
-    </div>
-  );
-}
-
-/* Sidebar Item */
-function SidebarItem({ icon, label, active }) {
-  return (
-    <div
-      className={`flex items-center gap-4 px-5 py-3 rounded-xl cursor-pointer transition
-      ${active ? "bg-blue-600/20 text-blue-400" : "hover:bg-white/5 text-white/70"}`}
-    >
-      <span className="text-lg">{icon}</span>
-      {label}
-    </div>
-  );
-}
-
-/* Stats Card */
-function StatCard({ icon, title, value, color }) {
-  const colors = {
-    blue: "from-blue-500/20 to-blue-700/20 text-blue-400",
-    green: "from-green-500/20 to-green-700/20 text-green-400",
-    yellow: "from-yellow-500/20 to-yellow-700/20 text-yellow-400",
+      // ✅ show only latest 4 assignments in dashboard
+      setAssignments(assRes.data.slice(0, 4));
+    } catch (error) {
+      console.log(error);
+      alert("Dashboard error / login again");
+    } finally {
+      setLoading(false);
+    }
   };
 
+  useEffect(() => {
+    fetchDashboard();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0d0d0d] text-white flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
   return (
-    <div
-      className={`bg-gradient-to-br ${colors[color]} backdrop-blur-xl border border-white/10 rounded-3xl p-7 hover:scale-[1.03] transition`}
-    >
-      <div className="flex items-center gap-5">
-        <div className="text-4xl">{icon}</div>
-        <div>
-          <p className="text-white/60 text-sm">{title}</p>
-          <h3 className="text-3xl font-bold">{value}</h3>
+    <div className="min-h-screen bg-[#0d0d0d] text-white px-4 py-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold">🎓 Student Dashboard</h1>
+
+          <button
+            onClick={() => navigate("/student/assignments")}
+            className="px-4 py-2 rounded-xl bg-[#0E21A0] hover:opacity-90 transition text-sm font-semibold"
+          >
+            View All Assignments
+          </button>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <div className="bg-[#141414] border border-white/10 p-4 rounded-2xl">
+            <p className="text-white/70 text-sm">Total Assignments</p>
+            <h2 className="text-3xl font-bold">{stats?.totalAssignments}</h2>
+          </div>
+
+          <div className="bg-[#141414] border border-white/10 p-4 rounded-2xl">
+            <p className="text-white/70 text-sm">Submitted</p>
+            <h2 className="text-3xl font-bold">{stats?.submittedAssignments}</h2>
+          </div>
+
+          <div className="bg-[#141414] border border-white/10 p-4 rounded-2xl">
+            <p className="text-white/70 text-sm">Pending</p>
+            <h2 className="text-3xl font-bold">{stats?.pendingAssignments}</h2>
+          </div>
+        </div>
+
+        {/* Assignments List */}
+        <div className="bg-[#141414] border border-white/10 rounded-2xl p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold">📚 Latest Assignments</h2>
+            <span className="text-sm text-white/60">Showing latest 4</span>
+          </div>
+
+          {assignments.length === 0 ? (
+            <p className="text-white/60">No assignments found.</p>
+          ) : (
+            <div className="space-y-4">
+              {assignments.map((a) => (
+                <div
+                  key={a._id}
+                  className="p-4 rounded-xl border border-white/10 bg-[#0d0d0d]"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="font-semibold">{a.title}</h3>
+                      <p className="text-sm text-white/60 mt-1">
+                        {a.description}
+                      </p>
+
+                      {a.deadline && (
+                        <p className="text-xs text-white/50 mt-2">
+                          Deadline:{" "}
+                          {new Date(a.deadline).toLocaleDateString()}
+                        </p>
+                      )}
+                    </div>
+
+                    <span
+                      className={`text-xs px-3 py-1 rounded-full ${
+                        a.isSubmitted
+                          ? "bg-green-500/20 text-green-300"
+                          : "bg-yellow-500/20 text-yellow-300"
+                      }`}
+                    >
+                      {a.isSubmitted ? "Submitted ✅" : "Pending ⏳"}
+                    </span>
+                  </div>
+
+                  {/* Action Button */}
+                  <div className="mt-4">
+                    {!a.isSubmitted ? (
+                      <button
+                        onClick={() => navigate(`/student/submit/${a._id}`)}
+                        className="px-4 py-2 rounded-xl bg-[#0E21A0] hover:opacity-90 transition text-sm font-semibold"
+                      >
+                        Submit Assignment
+                      </button>
+                    ) : (
+                      <p className="text-sm text-green-300">
+                        ✅ You already submitted this assignment
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
-}
+};
 
-/* Activity Row */
-function ActivityRow({ title, status, color }) {
-  return (
-    <div className="flex items-center justify-between bg-black/30 px-6 py-4 rounded-xl border border-white/5">
-      <span>{title}</span>
-      <span className={`font-semibold ${color}`}>{status}</span>
-    </div>
-  );
-}
+export default StudentDashboard;

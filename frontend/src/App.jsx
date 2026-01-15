@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
+
 // Components
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -82,6 +83,15 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/teacher/submissions/:id"
+          element={
+            <ProtectedRoute role="teacher">
+              <Submissions />
+            </ProtectedRoute>
+          }
+        />
+
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
