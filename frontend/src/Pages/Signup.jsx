@@ -17,58 +17,89 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // 🔹 Reset fields when role changes
+  const switchRole = (selectedRole) => {
+    setRole(selectedRole);
+    setName("");
+    setRollNo("");
+    setEmail("");
+    setPassword("");
+    setError("");
+  };
+
   const handleSignup = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
-      setLoading(true);
-
-      let res;
+      let response;
 
       if (role === "student") {
-        res = await API.post("/student/register", {
+        response = await API.post("/student/register", {
           name,
           rollNo,
           email,
           password,
         });
       } else {
-        res = await API.post("/teacher/register", {
+        response = await API.post("/teacher/register", {
           name,
           email,
           password,
         });
       }
 
-      // ✅ store auth in context
-      login(res.data);
+      // ✅ Save auth globally
+      login({
+        user: response.data.user,
+        token: response.data.token,
+        role,
+      });
 
-      // ✅ redirect
-      if (role === "student") navigate("/student/dashboard");
-      else navigate("/teacher/dashboard");
+      // ✅ Redirect based on role
+      navigate(
+        role === "student"
+          ? "/student/dashboard"
+          : "/teacher/dashboard"
+      );
+
     } catch (err) {
-      setError(err.response?.data?.message || "Signup failed");
+      setError(
+        err.response?.data?.message ||
+        "Signup failed. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#0d0d0d] text-white flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#0d0d0d] text-white flex items-center justify-center px-4 relative">
+
+      {/* 🔙 TOP LEFT BACK BUTTON */}
+      <button
+        onClick={() => navigate(-1)}
+        disabled={loading}
+        className="absolute top-6 left-6 text-white/70 hover:text-white transition text-sm disabled:opacity-40"
+      >
+        ← Back
+      </button>
+
       <div className="w-full max-w-md bg-[#141414] border border-white/10 rounded-2xl shadow-lg p-6">
-        <h2 className="text-2xl font-bold text-center">
+
+        <h2 className="text-2xl font-bold text-center mb-4">
           Signup <span className="text-[#0E21A0]">Portal</span>
         </h2>
 
-        {/* Toggle */}
-        <div className="flex bg-[#0d0d0d] rounded-xl p-1 border border-white/10 mt-5">
+        {/* 🔹 Role Toggle */}
+        <div className="flex bg-[#0d0d0d] rounded-xl p-1 border border-white/10">
           <button
             type="button"
-            onClick={() => setRole("student")}
+            onClick={() => switchRole("student")}
             className={`w-1/2 py-2 rounded-lg text-sm font-semibold transition ${
               role === "student"
-                ? "bg-[#0E21A0] text-white"
+                ? "bg-[#0E21A0]"
                 : "text-white/70 hover:text-white"
             }`}
           >
@@ -77,10 +108,10 @@ const Signup = () => {
 
           <button
             type="button"
-            onClick={() => setRole("teacher")}
+            onClick={() => switchRole("teacher")}
             className={`w-1/2 py-2 rounded-lg text-sm font-semibold transition ${
               role === "teacher"
-                ? "bg-[#0E21A0] text-white"
+                ? "bg-[#0E21A0]"
                 : "text-white/70 hover:text-white"
             }`}
           >
@@ -88,14 +119,14 @@ const Signup = () => {
           </button>
         </div>
 
-        {/* Error */}
+        {/* 🔹 Error */}
         {error && (
           <div className="mt-4 p-2 rounded-lg bg-red-500/20 text-red-300 text-sm">
             {error}
           </div>
         )}
 
-        {/* Form */}
+        {/* 🔹 Signup Form */}
         <form onSubmit={handleSignup} className="space-y-4 mt-5">
           <div>
             <label className="text-sm text-white/70">Name</label>
@@ -103,22 +134,21 @@ const Signup = () => {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Enter name"
-              className="w-full mt-1 px-4 py-2 rounded-xl bg-[#0d0d0d] border border-white/10 outline-none focus:border-[#0E21A0]"
+              placeholder="Enter full name"
+              className="w-full mt-1 px-4 py-2 rounded-xl bg-[#0d0d0d] border border-white/10 focus:border-[#0E21A0] outline-none"
               required
             />
           </div>
 
-          {/* Student Roll No */}
           {role === "student" && (
             <div>
-              <label className="text-sm text-white/70">Roll No</label>
+              <label className="text-sm text-white/70">Roll Number</label>
               <input
                 type="text"
                 value={rollNo}
                 onChange={(e) => setRollNo(e.target.value)}
                 placeholder="Enter roll number"
-                className="w-full mt-1 px-4 py-2 rounded-xl bg-[#0d0d0d] border border-white/10 outline-none focus:border-[#0E21A0]"
+                className="w-full mt-1 px-4 py-2 rounded-xl bg-[#0d0d0d] border border-white/10 focus:border-[#0E21A0] outline-none"
                 required
               />
             </div>
@@ -131,7 +161,7 @@ const Signup = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter email"
-              className="w-full mt-1 px-4 py-2 rounded-xl bg-[#0d0d0d] border border-white/10 outline-none focus:border-[#0E21A0]"
+              className="w-full mt-1 px-4 py-2 rounded-xl bg-[#0d0d0d] border border-white/10 focus:border-[#0E21A0] outline-none"
               required
             />
           </div>
@@ -143,26 +173,38 @@ const Signup = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="********"
-              className="w-full mt-1 px-4 py-2 rounded-xl bg-[#0d0d0d] border border-white/10 outline-none focus:border-[#0E21A0]"
+              className="w-full mt-1 px-4 py-2 rounded-xl bg-[#0d0d0d] border border-white/10 focus:border-[#0E21A0] outline-none"
               required
             />
           </div>
 
+          {/* 🔹 Signup Button */}
           <button
             type="submit"
             disabled={loading}
             className="w-full py-2 rounded-xl bg-[#0E21A0] hover:opacity-90 transition font-semibold disabled:opacity-50"
           >
-            {loading ? "Creating..." : `Signup as ${role}`}
+            {loading ? "Creating account..." : `Signup as ${role}`}
           </button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-white/60">
-          Already have an account?{" "}
-          <Link to="/login" className="text-[#0E21A0] hover:underline">
+        {/* 🔹 Bottom Navigation */}
+        <div className="flex justify-between mt-4 text-sm">
+          <button
+            onClick={() => navigate("/")}
+            className="text-white/60 hover:text-white"
+          >
+            Back to Home
+          </button>
+
+          <Link
+            to="/login"
+            className="text-[#0E21A0] hover:underline"
+          >
             Login
           </Link>
         </div>
+
       </div>
     </div>
   );
