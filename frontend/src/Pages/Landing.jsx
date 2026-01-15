@@ -1,128 +1,70 @@
 import React from "react";
-import { FaCloudUploadAlt, FaUserGraduate, FaChalkboardTeacher, FaLock, FaGithub, FaArrowRight, FaServer, FaShieldAlt } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
-export default function Landing() {
+const Landing = () => {
   return (
-    <div className="font-sans bg-slate-950 text-gray-200 overflow-x-hidden">
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.15),transparent_60%)]" />
-        <div className="relative z-10 text-center px-6 max-w-4xl">
-          <p className="uppercase tracking-widest text-sky-400 font-semibold mb-4">Cloud Academic Platform</p>
-          <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6 leading-tight">
-            Student Assignment Submission Portal
-          </h1>
-          <p className="text-lg md:text-xl text-gray-400 mb-10">
-            A modern cloud-based system to submit, manage, and evaluate student assignments with security and scalability.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-sky-500 hover:bg-sky-400 text-slate-900 px-8 py-3 rounded-lg font-semibold">
-              Student Login
-            </button>
-            <button className="border border-slate-700 hover:border-sky-400 px-8 py-3 rounded-lg font-semibold text-gray-200 hover:text-sky-400">
-              Teacher Login
-            </button>
+    <div className="min-h-screen bg-[#0d0d0d] text-white flex items-center justify-center px-4">
+      <div className="max-w-3xl w-full text-center">
+        {/* Title */}
+        <h1 className="text-4xl md:text-5xl font-bold">
+          Assignment{" "}
+          <span className="text-[#0E21A0]">Submission Portal</span>
+        </h1>
+
+        {/* Subtitle */}
+        <p className="mt-4 text-white/60 text-base md:text-lg">
+          A simple platform for students to submit assignments and teachers to
+          review & grade them.
+        </p>
+
+        {/* Buttons */}
+        <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+          <Link
+            to="/login"
+            className="px-6 py-3 rounded-2xl bg-[#0E21A0] hover:opacity-90 transition font-semibold"
+          >
+            Login
+          </Link>
+
+          <Link
+            to="/signup"
+            className="px-6 py-3 rounded-2xl border border-white/10 hover:border-white/30 transition font-semibold"
+          >
+            Signup
+          </Link>
+        </div>
+
+        {/* Features */}
+        <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
+          <div className="bg-[#141414] border border-white/10 rounded-2xl p-5">
+            <h3 className="font-semibold">✅ Student Submission</h3>
+            <p className="text-sm text-white/60 mt-2">
+              Students can upload links and track submission status.
+            </p>
+          </div>
+
+          <div className="bg-[#141414] border border-white/10 rounded-2xl p-5">
+            <h3 className="font-semibold">🧑‍🏫 Teacher Review</h3>
+            <p className="text-sm text-white/60 mt-2">
+              Teachers can view submissions, provide feedback & marks.
+            </p>
+          </div>
+
+          <div className="bg-[#141414] border border-white/10 rounded-2xl p-5">
+            <h3 className="font-semibold">⚡ Fast & Minimal</h3>
+            <p className="text-sm text-white/60 mt-2">
+              Beginner-friendly MERN project with clean UI and role-based access.
+            </p>
           </div>
         </div>
-      </section>
 
-      {/* Stats Section */}
-      <section className="py-20 bg-slate-900">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 text-center px-8">
-          <Stat value="100%" label="Cloud Based" />
-          <Stat value="Secure" label="Role Authentication" />
-          <Stat value="24/7" label="Access Anywhere" />
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="py-24 bg-slate-950">
-        <h2 className="text-3xl md:text-4xl font-bold text-center text-white mb-16">Why Choose This Portal?</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto px-8">
-          <Feature icon={<FaCloudUploadAlt size={34} />} title="Cloud Submissions" desc="Upload assignments securely with cloud storage support." />
-          <Feature icon={<FaShieldAlt size={34} />} title="High Security" desc="Protected data with authentication and access control." />
-          <Feature icon={<FaServer size={34} />} title="Scalable System" desc="Designed to scale for institutions and large user bases." />
-        </div>
-      </section>
-
-      {/* Workflow */}
-      <section className="py-24 bg-gradient-to-r from-slate-900 to-slate-800">
-        <h2 className="text-3xl md:text-4xl font-bold text-center text-white mb-16">How It Works</h2>
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 px-8">
-          <Step number="01" title="Login" desc="Secure authentication for students and teachers." />
-          <Step number="02" title="Submit / Review" desc="Students submit work, teachers review it online." />
-          <Step number="03" title="Grade & Feedback" desc="Fast evaluation with digital feedback." />
-        </div>
-      </section>
-
-      {/* Roles */}
-      <section className="py-24 bg-slate-950">
-        <h2 className="text-3xl md:text-4xl font-bold text-center text-white mb-16">Built for Everyone</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto px-8">
-          <RoleCard icon={<FaUserGraduate size={36} />} title="Students" points={["Submit assignments online", "Track submission status", "Access feedback anytime"]} />
-          <RoleCard icon={<FaChalkboardTeacher size={36} />} title="Teachers" points={["Create & manage assignments", "Evaluate submissions", "Provide grades & remarks"]} />
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-24 bg-gradient-to-r from-sky-500 to-cyan-400 text-slate-900 text-center">
-        <h2 className="text-3xl md:text-4xl font-extrabold mb-6">Ready to Experience Smart Submissions?</h2>
-        <p className="mb-10 text-lg font-medium">A professional cloud solution for modern education.</p>
-        <button className="bg-slate-900 text-white px-10 py-4 rounded-lg font-semibold inline-flex items-center gap-3 hover:bg-slate-800">
-          Launch Portal <FaArrowRight />
-        </button>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-12 bg-slate-900 text-center border-t border-slate-800">
-        <p className="text-gray-400 mb-4">© 2026 Student Submission Portal</p>
-        <div className="flex justify-center gap-6 text-gray-400">
-          <FaGithub className="hover:text-sky-400 cursor-pointer" size={22} />
-        </div>
-      </footer>
+        {/* Footer */}
+        <p className="mt-12 text-xs text-white/40">
+          © {new Date().getFullYear()} Assignment Portal • Built with MERN
+        </p>
+      </div>
     </div>
   );
-}
+};
 
-function Feature({ icon, title, desc }) {
-  return (
-    <div className="bg-slate-900 border border-slate-800 p-8 rounded-2xl hover:border-sky-400 hover:-translate-y-1 transition-all duration-300 text-center">
-      <div className="text-sky-400 mb-5 flex justify-center">{icon}</div>
-      <h3 className="text-xl font-semibold text-white mb-3">{title}</h3>
-      <p className="text-gray-400">{desc}</p>
-    </div>
-  );
-}
-
-function Step({ number, title, desc }) {
-  return (
-    <div className="text-center">
-      <div className="text-sky-400 text-4xl font-bold mb-4">{number}</div>
-      <h4 className="text-xl font-semibold text-white mb-3">{title}</h4>
-      <p className="text-gray-400">{desc}</p>
-    </div>
-  );
-}
-
-function RoleCard({ icon, title, points }) {
-  return (
-    <div className="bg-slate-900 border border-slate-800 p-10 rounded-2xl hover:border-sky-400 transition">
-      <div className="text-sky-400 mb-6">{icon}</div>
-      <h3 className="text-2xl font-semibold text-white mb-5">{title}</h3>
-      <ul className="space-y-3 text-gray-400">
-        {points.map((p, i) => (
-          <li key={i}>• {p}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-function Stat({ value, label }) {
-  return (
-    <div className="bg-slate-950 border border-slate-800 p-10 rounded-xl">
-      <h3 className="text-3xl font-bold text-sky-400 mb-2">{value}</h3>
-      <p className="text-gray-400">{label}</p>
-    </div>
-  );
-}
+export default Landing;
