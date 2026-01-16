@@ -21,7 +21,7 @@ const SubmitAssignment = () => {
       });
 
       alert("✅ Assignment submitted successfully!");
-      navigate("/student/assignments"); // after submit
+      navigate("/student/assignments");
     } catch (err) {
       alert(err.response?.data?.message || "Submission failed");
     } finally {
@@ -33,12 +33,28 @@ const SubmitAssignment = () => {
     <div className="min-h-screen bg-[#0d0d0d] text-white px-4 py-6">
       <div className="max-w-xl mx-auto">
 
-        {/* 🔙 Back Button */}
+        {/* 🔙 Professional Back Button */}
         <button
           onClick={() => navigate("/student/dashboard")}
-          className="mb-4 text-sm text-white/70 hover:text-white transition"
+          className="
+            group
+            flex items-center gap-2
+            mb-6
+            px-4 py-2
+            rounded-xl
+            bg-[#111827]
+            border border-white/10
+            text-sm font-medium text-white/80
+            hover:bg-[#0E21A0]
+            hover:text-white
+            transition-all duration-200
+            shadow-md
+          "
         >
-          ⬅ Back to Dashboard
+          <span className="transition-transform group-hover:-translate-x-1">
+            ←
+          </span>
+          Back to Dashboard
         </button>
 
         <h1 className="text-2xl font-bold mb-6">📤 Submit Assignment</h1>
@@ -56,7 +72,14 @@ const SubmitAssignment = () => {
               value={answerLink}
               onChange={(e) => setAnswerLink(e.target.value)}
               placeholder="https://drive.google.com/..."
-              className="w-full mt-1 px-4 py-2 rounded-xl bg-[#0d0d0d] border border-white/10 outline-none focus:border-[#0E21A0]"
+              className="
+                w-full mt-1 px-4 py-2
+                rounded-xl
+                bg-[#0d0d0d]
+                border border-white/10
+                outline-none
+                focus:border-[#0E21A0]
+              "
               required
             />
           </div>
@@ -64,7 +87,15 @@ const SubmitAssignment = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2 rounded-xl bg-[#0E21A0] hover:opacity-90 transition font-semibold disabled:opacity-50"
+            className="
+              w-full py-2
+              rounded-xl
+              bg-[#0E21A0]
+              hover:opacity-90
+              transition
+              font-semibold
+              disabled:opacity-50
+            "
           >
             {loading ? "Submitting..." : "Submit Assignment"}
           </button>
