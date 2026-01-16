@@ -13,11 +13,14 @@ export const submitAssignment = async (req, res) => {
     const assignment = await Assignment.findById(assignmentId);
     if (!assignment) return res.status(404).json({ message: "Assignment not found" });
 
-    // prevent duplicate
-    const already = await Submission.findOne({ assignmentId, studentId });
-    if (already) {
-      return res.status(400).json({ message: "Already submitted" });
+    // ✅ Deadline crossed validation
+    if (assignment.deadline && new Date() > new Date(assignment.deadline)) {
+      return res.status(400).json({ message: "Deadline crossed! Cannot submit now." });
     }
+
+    // ✅ Prevent duplicate
+    const already = await Submission.findOne({ assignmentId, studentId });
+    if (already) return res.status(400).json({ message: "Already submitted" });
 
     const submission = await Submission.create({
       assignmentId,
@@ -31,7 +34,7 @@ export const submitAssignment = async (req, res) => {
       submission,
     });
   } catch (err) {
-    console.log(err.message);
+    console.log("submitAssignment error:", err.message);
     res.status(500).json({ message: "Server error" });
   }
 };

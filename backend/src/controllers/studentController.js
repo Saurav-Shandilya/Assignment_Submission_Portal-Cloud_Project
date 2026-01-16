@@ -1,7 +1,6 @@
 import Assignment from "../models/Assignment.js";
 import Submission from "../models/Submission.js";
 
-// ✅ Student Dashboard Stats (optional, if already in your file)
 export const studentDashboard = async (req, res) => {
   try {
     const studentId = req.student._id;
@@ -21,13 +20,11 @@ export const studentDashboard = async (req, res) => {
   }
 };
 
-// ✅ View Assignments for Student (with status)
 export const getStudentAssignments = async (req, res) => {
   try {
     const studentId = req.student._id;
 
     const assignments = await Assignment.find().sort({ createdAt: -1 });
-
     const submissions = await Submission.find({ studentId });
 
     const submittedMap = {};
@@ -48,6 +45,22 @@ export const getStudentAssignments = async (req, res) => {
     res.status(200).json(result);
   } catch (error) {
     console.log("getStudentAssignments error:", error.message);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// ✅ Student can view marks + feedback
+export const getMySubmissions = async (req, res) => {
+  try {
+    const studentId = req.student._id;
+
+    const submissions = await Submission.find({ studentId })
+      .populate("assignmentId", "title deadline")
+      .sort({ createdAt: -1 });
+
+    res.json(submissions);
+  } catch (error) {
+    console.log("getMySubmissions error:", error.message);
     res.status(500).json({ message: "Server error" });
   }
 };
