@@ -21,7 +21,7 @@ const SubmitAssignment = () => {
       });
 
       alert("✅ Assignment submitted successfully!");
-      navigate("/student/assignments"); // ✅ go back
+      navigate("/student/assignments"); // after submit
     } catch (err) {
       alert(err.response?.data?.message || "Submission failed");
     } finally {
@@ -32,6 +32,15 @@ const SubmitAssignment = () => {
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white px-4 py-6">
       <div className="max-w-xl mx-auto">
+
+        {/* 🔙 Back Button */}
+        <button
+          onClick={() => navigate("/student/dashboard")}
+          className="mb-4 text-sm text-white/70 hover:text-white transition"
+        >
+          ⬅ Back to Dashboard
+        </button>
+
         <h1 className="text-2xl font-bold mb-6">📤 Submit Assignment</h1>
 
         <form
