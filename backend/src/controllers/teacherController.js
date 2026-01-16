@@ -8,7 +8,7 @@ export const teacherDashboard = async (req, res) => {
 
     const totalAssignments = await Assignment.countDocuments({ teacherId });
 
-    // ✅ submissions only for this teacher assignments
+    // only teacher submissions
     const teacherAssignments = await Assignment.find({ teacherId }).select("_id");
     const assignmentIds = teacherAssignments.map((a) => a._id);
 
@@ -90,7 +90,7 @@ export const getAllSubmissions = async (req, res) => {
   }
 };
 
-// ✅ Review submission (marks + feedback)
+// ✅ Review submission (Marks + Feedback)
 export const reviewSubmission = async (req, res) => {
   try {
     const { id } = req.params; // submission id
@@ -108,6 +108,31 @@ export const reviewSubmission = async (req, res) => {
     res.json({ message: "Submission reviewed", submission });
   } catch (error) {
     console.log("reviewSubmission error:", error.message);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// ✅ DELETE assignment (also delete related submissions)
+export const deleteAssignment = async (req, res) => {
+  try {
+    const teacherId = req.teacher._id;
+    const { id } = req.params;
+
+    // ✅ ensure teacher owns assignment
+    const assignment = await Assignment.findOne({ _id: id, teacherId });
+    if (!assignment) {
+      return res.status(404).json({ message: "Assignment not found" });
+    }
+
+    // ✅ delete all submissions linked with assignment
+    await Submission.deleteMany({ assignmentId: id });
+
+    // ✅ delete assignment
+    await Assignment.deleteOne({ _id: id });
+
+    res.json({ message: "Assignment deleted successfully" });
+  } catch (error) {
+    console.log("deleteAssignment error:", error.message);
     res.status(500).json({ message: "Server error" });
   }
 };

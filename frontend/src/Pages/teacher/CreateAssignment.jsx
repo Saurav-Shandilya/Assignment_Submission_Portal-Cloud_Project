@@ -20,18 +20,6 @@ const CreateAssignment = () => {
   };
 
   return (
-<<<<<<< HEAD
-    <div className="min-h-screen bg-[#0d0d0d] text-white p-6">
-      {/* BACK BUTTON */}
-      <button
-        onClick={() => navigate(-1)}
-        className="mb-4 px-4 py-2 bg-gray-700 rounded-lg hover:bg-gray-600"
-      >
-        ⬅ Back
-      </button>
-
-      <h1 className="text-2xl font-bold mb-6">➕ Create Assignment</h1>
-=======
     <div className="min-h-screen flex flex-col bg-slate-950 text-gray-200">
       {/* Navbar / Header */}
       <div className="flex justify-between items-center px-8 py-4 bg-slate-900 shadow-md">
@@ -50,7 +38,6 @@ const CreateAssignment = () => {
           </button>
         </div>
       </div>
->>>>>>> 65c0bdc2b9129cdac92544fec7ad988fd8a95600
 
       {/* Form */}
       <div className="flex flex-1 justify-center items-start py-12 px-4">
