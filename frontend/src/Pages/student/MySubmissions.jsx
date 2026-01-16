@@ -32,6 +32,15 @@ const MySubmissions = () => {
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white px-4 py-6">
       <div className="max-w-5xl mx-auto">
+
+        {/* Back to Dashboard */}
+        <a
+          href="/student/dashboard"
+          className="inline-block mb-4 text-sm text-white hover:underline"
+        >
+          ← Back to Dashboard
+        </a>
+
         <h1 className="text-2xl font-bold mb-6">📌 My Submissions</h1>
 
         {submissions.length === 0 ? (
