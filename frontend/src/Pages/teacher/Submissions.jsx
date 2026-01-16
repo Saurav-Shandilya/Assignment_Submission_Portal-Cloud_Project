@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { getTeacherSubmissions, reviewSubmission } from "../../api/teacherApi";
+import { useNavigate } from "react-router-dom";
 
 const Submissions = () => {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const load = async () => {
     try {
@@ -43,6 +45,14 @@ const Submissions = () => {
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white px-4 py-6">
       <div className="max-w-6xl mx-auto">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate("/teacher/dashboard")}
+          className="mb-4 px-4 py-2 rounded-xl bg-[#141414] border border-white/10 hover:border-[#0E21A0] text-sm"
+        >
+          ← Back to Dashboard
+        </button>
+
         <h1 className="text-2xl font-bold mb-6">📥 Submissions</h1>
 
         {submissions.length === 0 ? (
