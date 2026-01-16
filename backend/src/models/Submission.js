@@ -15,14 +15,20 @@ const submissionSchema = new mongoose.Schema(
     },
 
     fileUrl: { type: String, default: "" },
-    status: { type: String, enum: ["submitted", "reviewed"], default: "submitted" },
+
+    status: {
+      type: String,
+      enum: ["submitted", "reviewed"],
+      default: "submitted",
+    },
+
     marks: { type: Number, default: null },
     feedback: { type: String, default: "" },
   },
   { timestamps: true }
 );
 
-// ✅ 1 student can submit 1 assignment only once
+// ✅ prevent duplicate submission
 submissionSchema.index({ assignmentId: 1, studentId: 1 }, { unique: true });
 
 const Submission = mongoose.model("Submission", submissionSchema);

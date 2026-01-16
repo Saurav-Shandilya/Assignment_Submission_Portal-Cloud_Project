@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 
+
 // Components
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -15,6 +16,8 @@ import Signup from "./Pages/Signup";
 import StudentDashboard from "./Pages/student/StudentDashboard";
 import ViewAssignments from "./Pages/student/ViewAssignments";
 import SubmitAssignment from "./Pages/student/SubmitAssignment";
+import MySubmissions from "./pages/student/MySubmissions";
+
 
 // Teacher Pages
 import TeacherDashboard from "./Pages/teacher/TeacherDashboard";
@@ -57,6 +60,15 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/student/submissions"
+          element={
+            <ProtectedRoute role="student">
+              <MySubmissions />
+            </ProtectedRoute>
+          }
+        />
+
 
         {/* Teacher */}
         <Route
